@@ -88,11 +88,11 @@ Raspberry Pi
 * `mkdir /home/pi/.ssh`
 * `chmod og-rwx .ssh`
 * copy your ssh public key to `/home/pi/.ssh/authorized_keys`
-* `chmod og-rwx .ssh`
+* `chmod og-rwx .ssh/authorized_keys`
 * exit and log in again with no password. You will be rebooting / logging in a few times so this step is worth it.
 * `sudo apt update` then `sudo apt upgrade` to upgrade to the latest OS
 * `sudo rpi-update` to update the firmware to the latest 
-* `sudo reboot` to reboot 
+* `sudo reboot` 
 * `sudo raspi-config` 
   * 2 Network. Set Network name eg `cleveryellowbox`
   * 2 Network. Enable predictable network interface names: Yes
@@ -110,16 +110,69 @@ UniFi Controller Install
 * install the UniFi controller on the raspberry pi: follow the instructions https://help.ubnt.com/hc/en-us/articles/220066768-UniFi-How-to-Install-Update-via-APT-on-Debian-or-Ubuntu. Method A works best for installing the keys.
 * reboot (because sometimes the controller doesn't start after install). It takes several minutes for the unifi controller to boot.
 * visit https://cleveryellowbox:8443 or https://192.168.1.11:8443 to finish the setup
+* from the setup wizard:
+  * enable auto backup. 
+  * Set time zone to UTC. 
+  * Connect to ubnt cloud account so you can access it remotely 
 * if this doesn't work, visit `/var/log/unifi` to look for error messages in the log files, or try `service unif status` which may hint at the problem
   * people frequently report problems with the wrong java version installed by default or with mongodb 
+  * try `apt unstall openjdk-8-jre-headless` _first_ before installing unifi (java certificates get messed up if you install a newer jre. `update-ca-certificates` may help)
 
 UniFi Controller Configuration (via the web interface)
 
-* Enable auto backup
+Disconnect the Raspberry Pi from the local network and connect it to the PoE Switch along with all the other components
+* USG: WAN1 to the internet
+* USG: LAN1 to the Link port of the switch
+* Raspberry Pi: to any other switch port
+* AP: to any other switch port
+* Your laptop: to a spare switch port so you can access the controller
 
+Controller is usually at https://192.168.1.7:8443. Browse to that address in a web browser. Log in
+* Go to Devices
+* You should see 2 devices
+* Apply any updates _before_ adopting. Updates may take > 10 minutes per device, may require a power cycle etc.
+  * beware: the USG defaults to serve DHCP from 192.168.1.1. So it will fail to upgrade if attached to a 192.168.1.0/24 network 
+* Devices tab: Adopt each unifi device and set an alias for them
+* Clients tab: There should be two clients: your laptop and the raspberry pi. Set aliases for them
+  * For the raspberry pi, go to Settings, Use Fixed IP and type the current IP address so it will always get the same IP
+* Settings | Site 
+  * check the timezone is UTC
+  * set an appropriate country, which defines the wifi channels allowed
+  * switch on automatic upgrades
+* Settings | Guest Control
+  * Pre-authorization access: add 192.168.1.7 (the fixed IP of the raspberry pi) which allows your guests to see the samba server and allows you (as guest) to see the controller  
+* Settings | Wireless Networks | Create New Wireless Network
+  * Name: `cleveryellowbox`
+  * WPA Personal
+  * Sensible password
+  * Apply Guest Policies
+* Settings | Services | MDNS
+  * Enable Multicast DNS so that guest users can see the name `cleveryellowbox`
+* Settings | Controller 
+  * set controller name to `cleveryellowbox`
+  * set controller host name to `cleveryellowbox`
+* Settings | Cloud Access
+  * Log in 
+  * it can take quite a few minutes before the controller is accessible from your cloud account  
+  
 Samba
-
-* todo: probably should partition the drive so that the samba share does not gobble up storage needed for the OS 
+* `sudo apt install samba`
+* `sudo mkdir -m 1777 /share`
+* `sudo nano /etc/samba/smb.conf`. Add the following to the end of the file
+```
+[cleveryellowbox]
+Comment = Clever Yellow Box
+Path = /share
+Browseable = yes
+Writeable = Yes
+only guest = yes
+create mask = 0777
+directory mask = 0777
+Public = yes
+Guest ok = yes
+guest account = ftp
+```
+* `sudo service smbd restart`
 
 ## To Do
  
@@ -132,4 +185,8 @@ Look at cellular modems
 
 Cases:
 * Pelican US store https://www.pelican.com/us/en/products/cases, NZ supplier https://www.rubbermonkey.co.nz/Cases-Bags/Pelican-Hard-Cases
+
+Samba
+* probably should partition the raspberry pi drive so that the samba share does not gobble up storage needed for the OS 
+* get some advice about filesystem permissions
 
