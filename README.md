@@ -49,13 +49,14 @@ All prices in New Zealand Dollars including 15% GST
 | Apacer 16GB MicroSDHC card | $9.32 | PBTech | Hard disk for Raspberry Pi. Slightly larger than needed to allow room for Samba file sharing |
 | Raspberry Pi Case | $10.61 | PBTech | Mounting point for Raspberry Pi |
 | [5 Port PoE Switch](https://www.jaycar.co.nz/5-port-10-100-poe-network-switch/p/YN8074) | $124.90 | Jaycar | PoE injector for all the things. | 
-| [12V PoE Splitter](https://www.jaycar.co.nz/poe-power-splitter/p/YN8414) | $29.90 | Jaycar | Power for USG. Could have used a [passive connector](https://www.jaycar.co.nz/poe-passive-adaptor-kit/p/YN8410) |
+| [12V PoE Splitter](https://www.jaycar.co.nz/poe-power-splitter/p/YN8414) | $29.90 | Jaycar | Power for USG |
 | [MicroUSB PoE Splitter](https://www.jaycar.co.nz/5v-micro-usb-poe-splitter/p/YN8416) | $14.90 | Jaycar | Power for Raspberry Pi. Could have used a [PoE hat](https://www.raspberrypi.org/products/poe-hat/) but these are $45+ | 
 | 2.5mm DC power [connector](https://www.jaycar.co.nz/2-5mm-bulkhead-male-dc-power-connector/p/PS0524) | $5.30 | Jaycar | Mount a power socket on top of the case |
 | Cat6 [Socket](https://corysadvantage.co.nz/products/product/0000934616) and [Module](https://corysadvantage.co.nz/products/product/0000936441) | $22.00 | JM Russell | Mount an ethernet jack for top of case |
-| **Total** | **$587.53** | | so far... |
-| Case | unknown | unknown | Transportation |
-| Mounting plate | unknown | unknown | Screw the components on to |
+| [ABS MPV2 Case](https://www.jaycar.co.nz/abs-instrument-case-with-purge-valve-mpv2/p/HB6381) | $80.90 | Jaycar | Travel case |
+| Alu Plate x 2 | $28.80 | Jaycar | Mount components inside case |
+| M3 Nuts & Bolts | $6.20 | Jaycar | Mount components inside case | 
+| **Total** | **$703.23** | | so far... |
    
 Plus some screws, Cat 6 ethernet cable and connectors, a mounting plate, electrical tape etc
 
@@ -116,7 +117,8 @@ UniFi Controller Install
   * Connect to ubnt cloud account so you can access it remotely 
 * if this doesn't work, visit `/var/log/unifi` to look for error messages in the log files, or try `service unif status` which may hint at the problem
   * people frequently report problems with the wrong java version installed by default or with mongodb 
-  * try `apt unstall openjdk-8-jre-headless` _first_ before installing unifi (java certificates get messed up if you install a newer jre. `update-ca-certificates` may help)
+  * try `apt install openjdk-8-jre-headless` _first_ before installing unifi 
+  * java certificates sometimes get messed up if you install a newer jre. Try `update-ca-certificates` 
 
 UniFi Controller Configuration (via the web interface)
 
