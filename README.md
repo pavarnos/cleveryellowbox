@@ -58,7 +58,7 @@ All prices in New Zealand Dollars including 15% GST
 | M3 Nuts & Bolts | $6.20 | Jaycar | Mount components inside case | 
 | **Total** | **$703.23** | | so far... |
    
-Plus some screws, Cat 6 ethernet cable and connectors, a mounting plate, electrical tape etc
+Plus Cat 6 ethernet cable and connectors, electrical tape etc
 
 I chose UniFi because
 * the price is good
@@ -76,7 +76,7 @@ Thanks to [Beta Solutions](https://www.betasolutions.co.nz) for their help locat
 
 ## Setup Instructions
 
-Raspberry Pi
+### Raspberry Pi
 
 * Download Raspbian Stretch Lite from https://www.raspberrypi.org/downloads/raspbian/
 * Use [Etcher](https://www.balena.io/etcher/) to put the image on the SD card
@@ -92,6 +92,7 @@ Raspberry Pi
 * `chmod og-rwx .ssh/authorized_keys`
 * exit and log in again with no password. You will be rebooting / logging in a few times so this step is worth it.
 * `sudo apt update` then `sudo apt upgrade` to upgrade to the latest OS
+* `sudo apt install unattended-upgrades` to keep the OS up to date
 * `sudo rpi-update` to update the firmware to the latest 
 * `sudo reboot` 
 * `sudo raspi-config` 
@@ -106,58 +107,9 @@ dtoverlay=pi3-disable-bt
 ```
 * comment out `dtparam=audio=on` if you wish
 
-UniFi Controller Install
+### Samba
 
-* install the UniFi controller on the raspberry pi: follow the instructions https://help.ubnt.com/hc/en-us/articles/220066768-UniFi-How-to-Install-Update-via-APT-on-Debian-or-Ubuntu. Method A works best for installing the keys.
-* reboot (because sometimes the controller doesn't start after install). It takes several minutes for the unifi controller to boot.
-* visit https://cleveryellowbox:8443 or https://192.168.1.11:8443 to finish the setup
-* from the setup wizard:
-  * enable auto backup. 
-  * Set time zone to UTC. 
-  * Connect to ubnt cloud account so you can access it remotely 
-* if this doesn't work, visit `/var/log/unifi` to look for error messages in the log files, or try `service unif status` which may hint at the problem
-  * people frequently report problems with the wrong java version installed by default or with mongodb 
-  * try `apt install openjdk-8-jre-headless` _first_ before installing unifi 
-  * java certificates sometimes get messed up if you install a newer jre. Try `update-ca-certificates` 
-
-UniFi Controller Configuration (via the web interface)
-
-Disconnect the Raspberry Pi from the local network and connect it to the PoE Switch along with all the other components
-* USG: WAN1 to the internet
-* USG: LAN1 to the Link port of the switch
-* Raspberry Pi: to any other switch port
-* AP: to any other switch port
-* Your laptop: to a spare switch port so you can access the controller
-
-Controller is usually at https://192.168.1.7:8443. Browse to that address in a web browser. Log in
-* Go to Devices
-* You should see 2 devices
-* Apply any updates _before_ adopting. Updates may take > 10 minutes per device, may require a power cycle etc.
-  * beware: the USG defaults to serve DHCP from 192.168.1.1. So it will fail to upgrade if attached to a 192.168.1.0/24 network 
-* Devices tab: Adopt each unifi device and set an alias for them
-* Clients tab: There should be two clients: your laptop and the raspberry pi. Set aliases for them
-  * For the raspberry pi, go to Settings, Use Fixed IP and type the current IP address so it will always get the same IP
-* Settings | Site 
-  * check the timezone is UTC
-  * set an appropriate country, which defines the wifi channels allowed
-  * switch on automatic upgrades
-* Settings | Guest Control
-  * Pre-authorization access: add 192.168.1.7 (the fixed IP of the raspberry pi) which allows your guests to see the samba server and allows you (as guest) to see the controller  
-* Settings | Wireless Networks | Create New Wireless Network
-  * Name: `cleveryellowbox`
-  * WPA Personal
-  * Sensible password
-  * Apply Guest Policies
-* Settings | Services | MDNS
-  * Enable Multicast DNS so that guest users can see the name `cleveryellowbox`
-* Settings | Controller 
-  * set controller name to `cleveryellowbox`
-  * set controller host name to `cleveryellowbox`
-* Settings | Cloud Access
-  * Log in 
-  * it can take quite a few minutes before the controller is accessible from your cloud account  
-  
-Samba
+Optional: set up the raspberry pi as a tiny file server to share files with other conference attendees eg to send slides to the projectionist
 * `sudo apt install samba`
 * `sudo mkdir -m 1777 /share`
 * `sudo nano /etc/samba/smb.conf`. Add the following to the end of the file
@@ -176,7 +128,91 @@ guest account = ftp
 ```
 * `sudo service smbd restart`
 
+### UniFi Controller Install
+
+* install the UniFi controller on the raspberry pi: follow the instructions https://help.ubnt.com/hc/en-us/articles/220066768-UniFi-How-to-Install-Update-via-APT-on-Debian-or-Ubuntu. Method A works best for installing the keys.
+* reboot (because sometimes the controller doesn't start after install). It takes several minutes for the unifi controller to boot.
+* visit https://cleveryellowbox:8443 or https://192.168.1.7:8443 to finish the setup
+* from the setup wizard:
+  * enable auto backup. 
+  * Set time zone to UTC. 
+  * Connect to ubnt cloud account so you can access it remotely 
+* if this doesn't work, visit `/var/log/unifi` to look for error messages in the log files, or try `service unifi status` which may hint at the problem
+  * people frequently report problems with the wrong java version installed by default or with mongodb 
+  * try `apt install openjdk-8-jre-headless` _first_ before installing unifi 
+  * java certificates sometimes get messed up if you install a newer jre. Try `update-ca-certificates` 
+
+### Physical Connections
+
+Disconnect the Raspberry Pi from the local network and connect it to the PoE Switch along with all the other components
+* USG: WAN1 to the internet
+* USG: LAN1 to the Link port of the switch
+* Raspberry Pi: to any other switch port
+* AP: to any other switch port
+* Your laptop: to a spare switch port so you can access the controller
+
+### UniFi Controller Configuration (via the web interface)
+
+Controller is usually at https://192.168.1.7:8443. Browse to that address in a web browser. Log in
+* Go to Devices
+* You should see 2 devices: the USG and the AP
+* Apply any updates _before_ adopting. Updates may take > 10 minutes per device, may require a power cycle etc.
+  * beware: the USG defaults to serve DHCP from 192.168.1.1. So it will fail to upgrade or adopt if attached to a 192.168.1.0/24 network 
+* Devices tab: Adopt each unifi device and set an alias for them
+* Clients tab: There should be two clients: your laptop and the raspberry pi. Set aliases for them
+  * For the raspberry pi, go to Settings, Use Fixed IP and type the current IP address so it will always get the same IP
+* Settings | Site 
+  * check the timezone is UTC
+  * set an appropriate country, which defines the wifi channels allowed
+  * switch on automatic upgrades. This will upgrade the devices (USG and AP) but _not_ the controller
+* Settings | Guest Control
+  * Pre-authorization access: add 192.168.1.7 (the fixed IP of the raspberry pi) which allows your guests to see the samba server and allows you (as guest) to see the controller  
+* Settings | Wireless Networks | Create New Wireless Network
+  * Name: `cleveryellowbox`
+  * WPA Personal
+  * Sensible password
+  * Apply Guest Policies
+* Settings | Services | MDNS
+  * Enable Multicast DNS so that guest users can see the name `cleveryellowbox`
+* Settings | Controller 
+  * set controller name to `cleveryellowbox`
+  * set controller host name to `cleveryellowbox`
+* Settings | Cloud Access
+  * Log in 
+  * it can take quite a few minutes before the controller is accessible from your cloud account   
+  
+You probably want to change the default IP address / DHCP range to avoid collisions with conference venue networks.
+Choose a random IP range eg 192.168.123.1 (where the 123 is something you think will be unique / unlikely at a venue).
+* Settings | Networks | LAN (Edit)
+  * Change Gateway / Subnet to your new IP address
+  * Update the DHCP range to match eg 192.168.123.6 - 192.168.123.254
+This will break lots of things: your controller will not be able to adopt the USG and AP. I'm not quite sure how I did 
+it but after multiple reboots, factory resets, forced adoptions etc i finally got the controller to adopt the USG and AP
+at their new addresses.
+* Set a "static" IP for the controller. 
+  * In Clients, click on the raspberrypi controller. 
+  * In Confuguration | Network, set the IP address to its current IP: probably 192.168.123.7
+*     
+  
+### Physical Build
+
+Cut the aluminium plate to 213x295mm and file in some grooves to allow it to slide to the bottom past the stays.
+I drilled a hole in the back to put the power cable in, and small screw holes in the lid for the wifi AP, 
+and through the base to hold the plate down and stop it moving in transit.  
+
+Ethernet cables were custom made to length.
+
+![Detail](/detail.jpeg)
+![Finished](/finished.jpeg)
+
+### Maintenance
+
+Automatic updates are switched on for most things. The unifi controller software and raspbian OS may need manual hands on updates once every 6 months.
+  
 ## To Do
+ 
+* include photos of final setup
+* include logical wiring diagram 
  
 Look at cellular modems
 * Robustel PoE with lots of bands incl China. Antennae and power separate https://www.pbtech.co.nz/product/NETRTL2001/Robustel-R2000-4L-2G3G4G-LTE-Router-Dual-SIM-2xEth
@@ -191,4 +227,7 @@ Cases:
 Samba
 * probably should partition the raspberry pi drive so that the samba share does not gobble up storage needed for the OS 
 * get some advice about filesystem permissions
+
+UniFi Controller
+* figure out how to automatically upgrade the controller: avoiding the backup prompt that requires human interaction
 
