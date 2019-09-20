@@ -197,10 +197,12 @@ at their new addresses.
 ### Physical Build
 
 Cut the aluminium plate to 213x295mm and file in some grooves to allow it to slide to the bottom past the stays.
-I drilled a hole in the back to put the power cable in, and small screw holes in the lid for the wifi AP, 
-and through the base to hold the plate down and stop it moving in transit.  
 
-Ethernet cables were custom made to length.
+I drilled a hole in the back of the case to put the power cable in, and small screw holes in the lid for the wifi AP 
+mounting bracket, and through the base to hold the plate down and stop it moving in transit.  
+
+Ethernet cables were custom made to length, because all the short patch leads i could find had large boots which made
+them too long to fit.
 
 ![Detail](/detail.jpeg)
 ![Finished](/finished.jpeg)
@@ -211,18 +213,12 @@ Automatic updates are switched on for most things. The unifi controller software
   
 ## To Do
  
-* include photos of final setup
-* include logical wiring diagram 
- 
 Look at cellular modems
 * Robustel PoE with lots of bands incl China. Antennae and power separate https://www.pbtech.co.nz/product/NETRTL2001/Robustel-R2000-4L-2G3G4G-LTE-Router-Dual-SIM-2xEth
 * Smaller cheaper modem https://www.pbtech.co.nz/product/NETDLK4921/D-Link-DWR-921-C3-4G-LTE-Router-Wireless-N300300Mb but ancient firmware and no manufacturer updates
 * wAP LTE kit from MikroTik https://mikrotik.com/product/wap_lte_kit#fndtn-specifications (Small, PoE RouterOS gets regular updates https://mikrotik.com/download/changelogs)
 * https://www.digi.com/products/networking/cellular-routers/digi-transport-wr31#partnumbers 
 * https://www.pbtech.co.nz/product/NETDTK0161/DrayTek-DV2862LAC-Triple-WAN-Router-LTE-ADSLVDSL-U  
-
-Cases:
-* Pelican US store https://www.pelican.com/us/en/products/cases, NZ supplier https://www.rubbermonkey.co.nz/Cases-Bags/Pelican-Hard-Cases
 
 Samba
 * probably should partition the raspberry pi drive so that the samba share does not gobble up storage needed for the OS 
