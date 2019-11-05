@@ -127,6 +127,7 @@ Guest ok = yes
 guest account = ftp
 ```
 * `sudo service smbd restart`
+* copy the `share/readme.txt` into the root of `/share` on the pi and set it read only so it cannot be deleted.
 
 ### UniFi Controller Install
 
@@ -210,6 +211,30 @@ them too long to fit.
 ### Maintenance
 
 Automatic updates are switched on for most things. The unifi controller software and raspbian OS may need manual hands on updates once every 6 months.
+
+* Use the app or web interface to update the firmware on the USG and the WiFi AP
+* Use ssh to `apt update` then `apt upgrade` on the controller
+
+To change the wifi password via the mobile app:
+Instructions for the iOS version of the UniFi app: https://help.ubnt.com/hc/en-us/articles/115012360487-UniFi-Getting-Started-with-the-UniFi-Mobile-App
+* Log in to the controller through the app
+* Tap More (...) in the bottom tool bar
+* Tap Settings
+* Tap WiFi         
+* Tap WiFi Networks
+* Tap the (i) on the right of the cleveryellowbox network name
+* Set the security key (this is the wifi password)
+* Tap Save
+* Wait about 60 seconds for the controller to re-provision. Any connected users will be disconnected.
+
+To change the wifi password using the web portal:
+* Go to https://cleveryellowbox:8443
+* Accept the security warnging for the self signed certificate
+* Log in       
+* Settings (cog igon bottom right)
+* Wireless Networks
+* Set the new password and Save
+* Wait 60 seconds   
   
 ## To Do
  
