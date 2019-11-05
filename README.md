@@ -215,8 +215,9 @@ Automatic updates are switched on for most things. The unifi controller software
 * Use the app or web interface to update the firmware on the USG and the WiFi AP
 * Use ssh to `apt update` then `apt upgrade` on the controller
 
-To change the wifi password via the mobile app:
-Instructions for the iOS version of the UniFi app: https://help.ubnt.com/hc/en-us/articles/115012360487-UniFi-Getting-Started-with-the-UniFi-Mobile-App
+To change the wifi password via the mobile app: https://help.ubnt.com/hc/en-us/articles/115012360487-UniFi-Getting-Started-with-the-UniFi-Mobile-App
+
+(Instructions for the iOS version of the UniFi app) 
 * Log in to the controller through the app
 * Tap More (...) in the bottom tool bar
 * Tap Settings
@@ -229,9 +230,9 @@ Instructions for the iOS version of the UniFi app: https://help.ubnt.com/hc/en-u
 
 To change the wifi password using the web portal:
 * Go to https://cleveryellowbox:8443
-* Accept the security warnging for the self signed certificate
+* Accept the security warning for the self signed certificate
 * Log in       
-* Settings (cog igon bottom right)
+* Settings (cog icon bottom right)
 * Wireless Networks
 * Set the new password and Save
 * Wait 60 seconds   

@@ -22,9 +22,9 @@ Instructions for the iOS version of the UniFi app:
 
 To change the wifi password using the web portal:
 - Go to https://cleveryellowbox:8443
-- Accept the security warnging for the self signed certificate
+- Accept the security warning for the self signed certificate
 - Log in
-- Settings (cog igon bottom right)
+- Settings (cog icon bottom right)
 - Wireless Networks
 - Set the new password and Save
 - Wait 60 seconds
